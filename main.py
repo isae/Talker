@@ -19,8 +19,19 @@ class MyHandler(BaseHTTPRequestHandler):
     def do_POST(self):
         content_length = int(self.headers['Content-Length'])
         post_data = self.rfile.read(content_length).decode("utf-8")
+        response(self, "OK")
         process_text(post_data)
         return 200
+
+
+def response(self, message):
+    response = bytes(message, "utf-8")  # create response
+
+    self.send_response(200)  # create header
+    self.send_header("Content-Length", str(len(response)))
+    self.end_headers()
+
+    self.wfile.write(response)
 
 
 def process_text(text):
@@ -32,7 +43,7 @@ def process_text(text):
         texttospeech.types.SynthesisInput(text=text),
         texttospeech.types.VoiceSelectionParams(
             language_code=lang_code,
-            ssml_gender=texttospeech.enums.SsmlVoiceGender.MALE
+            ssml_gender=texttospeech.enums.SsmlVoiceGender.FEMALE
         ),
         texttospeech.types.AudioConfig(
             audio_encoding=texttospeech.enums.AudioEncoding.LINEAR16)
